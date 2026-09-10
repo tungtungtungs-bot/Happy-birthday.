@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+
+<title>Happy Birthday Harvy & Joscel</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:linear-gradient(145deg,#dbe5e9,#eee9e3);
+}
+
+/* INTRO */
+
+#intro{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.card{
+  width:min(390px,100%);
+  padding:30px 23px;
+  text-align:center;
+  background:#f7f4ed;
+  border:1px solid #cbc4b9;
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,.14);
+}
+
+.cake{
+  font-size:50px;
+}
+
+.card h1{
+  margin:10px 0 4px;
+  color:#3e4b53;
+  font-size:28px;
+}
+
+.names{
+  color:#566a74;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.card p{
+  margin:18px 0 23px;
+  color:#666;
+  line-height:1.6;
+}
+
+#start{
+  border:0;
+  border-radius:24px;
+  padding:13px 27px;
+  background:#50636d;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+
+/* GAME */
+
+#game{
+  position:fixed;
+  inset:0;
+  display:none;
+  overflow:hidden;
+  background:linear-gradient(145deg,#d8e2e6,#e9e5df);
+}
+
+#game.active{
+  display:block;
+}
+
+/* TITLE */
+
+.title{
+  position:absolute;
+  top:8px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:4000;
+  width:min(330px,90vw);
+  padding:8px 14px;
+  text-align:center;
+  background:rgba(247,244,237,.94);
+  border:1px solid #c9c1b5;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  pointer-events:none;
+}
+
+.title h2{
+  margin:0;
+  color:#3d4b53;
+  font-size:19px;
+}
+
+.title p{
+  margin:3px 0 0;
+  color:#68747a;
+  font-size:11px;
+}
+
+/* TEMPERATURE */
+
+#temperature{
+  position:absolute;
+  top:76px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:4000;
+  min-width:125px;
+  padding:7px 15px;
+  text-align:center;
+  background:rgba(247,244,237,.95);
+  border:1px solid #c9c1b5;
+  border-radius:20px;
+  box-shadow:0 3px 9px rgba(0,0,0,.12);
+  font-size:12px;
+  font-weight:bold;
+  opacity:0;
+  pointer-events:none;
+}
+
+#temperature.show{
+  opacity:1;
+}
+
+#temperature.cold{
+  color:#536d78;
+}
+
+#temperature.warm{
+  color:#9b754b;
+}
+
+#temperature.hot{
+  color:#b6533b;
+}
+
+#temperature.scorching{
+  color:#a72e20;
+  transform:translateX(-50%) scale(1.06);
+}
+
+/* FIELD */
+
+#field{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  contain:strict;
+}
+
+/* NORMAL ENVELOPE */
+
+.envelope{
+  position:absolute;
+  width:88px;
+  height:61px;
+  background:#eee8dc;
+  border:1px solid #aaa296;
+  border-radius:5px;
+
+  box-shadow:0 2px 4px rgba(0,0,0,.16);
+
+  transform:
+    translate3d(-50%,-50%,0)
+    rotate(var(--rotation));
+
+  touch-action:none;
+  user-select:none;
+  cursor:grab;
+  z-index:var(--depth);
+  contain:layout paint;
+}
+
+/* NORMAL FLAP */
+
+.envelope::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  width:43px;
+  height:43px;
+
+  border-left:1px solid #aaa296;
+  border-bottom:1px solid #aaa296;
+
+  transform:
+    translate(-50%,-14px)
+    rotate(45deg);
+
+  pointer-events:none;
+}
+
+/* NORMAL SHADOW */
+
+.envelope::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  z-index:-1;
+  border-radius:5px;
+  box-shadow:0 5px 9px rgba(0,0,0,.12);
+  pointer-events:none;
+}
+
+/* DRAGGING */
+
+.envelope.dragging{
+  z-index:3000;
+  cursor:grabbing;
+
+  transform:
+    translate3d(-50%,-50%,0)
+    rotate(0deg)
+    scale(1.06);
+
+  box-shadow:
+    0 8px 16px rgba(0,0,0,.25);
+}
+
+/* =================================================
+   SECRET VIDEO ENVELOPE
+   ================================================= */
+
+.envelope.secret{
+  /*
+    It is intentionally different from every
+    normal envelope, but still looks like an envelope.
+  */
+
+  background:
+    linear-gradient(145deg,#e9dfcf,#f7f0e3);
+
+  border:2px solid #72675a;
+
+  box-shadow:
+    0 3px 7px rgba(0,0,0,.24),
+    inset 0 0 0 1px rgba(255,255,255,.5);
+
+  overflow:visible;
+}
+
+/* SECRET FLAP */
+
+.envelope.secret::before{
+  width:45px;
+  height:45px;
+
+  border-left:2px solid #72675a;
+  border-bottom:2px solid #72675a;
+}
+
+/*
+  Video symbol is part of the envelope design itself.
+  It is NOT a separate floating marker.
+*/
+
+.envelope.secret .videoBadge{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:34px;
+  height:25px;
+
+  transform:translate(-50%,-35%);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#3f4d53;
+
+  border-radius:6px;
+
+  box-shadow:
+    0 2px 5px rgba(0,0,0,.25);
+
+  pointer-events:none;
+}
+
+/* PLAY TRIANGLE */
+
+.envelope.secret .videoBadge::after{
+  content:"";
+
+  width:0;
+  height:0;
+
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  border-left:9px solid #f7f4ed;
+
+  margin-left:2px;
+}
+
+/*
+  Small film-strip details.
+*/
+
+.envelope.secret .filmDetail{
+  position:absolute;
+
+  width:5px;
+  height:5px;
+
+  background:#c9c0b2;
+
+  border-radius:1px;
+
+  pointer-events:none;
+}
+
+.envelope.secret .film1{
+  left:8px;
+  top:8px;
+}
+
+.envelope.secret .film2{
+  right:8px;
+  top:8px;
+}
+
+.envelope.secret .film3{
+  left:8px;
+  bottom:8px;
+}
+
+.envelope.secret .film4{
+  right:8px;
+  bottom:8px;
+}
+
+/* SECRET DRAGGING */
+
+.envelope.secret.dragging{
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.3);
+}
+
+/* SECRET OPEN */
+
+.envelope.secret.open{
+  z-index:4500;
+
+  width:min(330px,84vw);
+  height:min(210px,55vh);
+
+  background:#111;
+
+  border:2px solid #333;
+
+  overflow:hidden;
+
+  transform:
+    translate3d(-50%,-50%,0)
+    rotate(0deg);
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,.4);
+}
+
+.envelope.secret.open::before,
+.envelope.secret.open::after{
+  display:none;
+}
+
+.envelope.secret.open .videoBadge,
+.envelope.secret.open .filmDetail{
+  display:none;
+}
+
+/* VIDEO INSIDE */
+
+.videoInside{
+  position:absolute;
+  inset:6px;
+
+  display:none;
+
+  background:#000;
+
+  border-radius:3px;
+
+  overflow:hidden;
+}
+
+.secret.open .videoInside{
+  display:block;
+}
+
+/* PLAY SCREEN */
+
+.playScreen{
+  position:absolute;
+  inset:0;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  background:#000;
+
+  color:#ddd;
+
+  cursor:pointer;
+}
+
+.playButton{
+  padding:11px 17px;
+
+  border:1px solid #777;
+
+  border-radius:6px;
+
+  font-size:13px;
+
+  background:#181818;
+}
+
+.youtube{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  border:0;
+
+  display:none;
+}
+
+/* MESSAGE */
+
+#message{
+  position:fixed;
+  inset:0;
+
+  z-index:6000;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  background:rgba(20,25,28,.48);
+}
+
+#message.show{
+  display:flex;
+}
+
+.messageBox{
+  width:min(370px,100%);
+
+  padding:27px 22px;
+
+  background:#f6f2e9;
+
+  border:1px solid #cbc3b6;
+
+  border-radius:10px;
+
+  text-align:center;
+
+  box-shadow:0 15px 35px rgba(0,0,0,.25);
+}
+
+.messageBox h2{
+  margin:0 0 13px;
+
+  color:#414e55;
+
+  font-size:21px;
+}
+
+.messageBox p{
+  color:#555;
+  line-height:1.6;
+  font-size:15px;
+}
+
+#leave{
+  margin-top:15px;
+
+  padding:10px 23px;
+
+  border:1px solid #bcb4a8;
+
+  border-radius:20px;
+
+  background:#e6e0d6;
+
+  color:#444;
+}
+
+/* BOTTOM */
+
+.bottom{
+  position:absolute;
+
+  left:50%;
+  bottom:7px;
+
+  transform:translateX(-50%);
+
+  z-index:4000;
+
+  width:max-content;
+  max-width:90vw;
+
+  padding:5px 11px;
+
+  background:rgba(247,244,237,.82);
+
+  border:1px solid rgba(190,184,175,.7);
+
+  border-radius:12px;
+
+  text-align:center;
+
+  color:rgba(45,50,54,.65);
+
+  font-size:10px;
+
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+
+<div id="intro">
+
+  <div class="card">
+
+    <div class="cake">🎂</div>
+
+    <h1>Happy Birthday!</h1>
+
+    <div class="names">
+      Harvy & Joscel
+    </div>
+
+    <p>
+      Somewhere inside these envelopes
+      is a hidden surprise.
+      <br><br>
+      <b>Find the video!</b>
+    </p>
+
+    <button id="start">
+      Start Searching
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- GAME -->
+
+<div id="game">
+
+  <div class="title">
+
+    <h2>Find the video!</h2>
+
+    <p>
+      Move the letters around and follow
+      the temperature.
+    </p>
+
+  </div>
+
+
+  <div id="temperature">
+    ❄️ COLD
+  </div>
+
+
+  <div id="field"></div>
+
+
+  <div class="bottom">
+    One letter contains the surprise.
+  </div>
+
+</div>
+
+
+<!-- MESSAGE -->
+
+<div id="message">
+
+  <div class="messageBox">
+
+    <h2>A little message</h2>
+
+    <p id="messageText"></p>
+
+    <button id="leave">
+      Leave Letter
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const TOTAL_ENVELOPES = 105;
+
+const VIDEO_ID = "xMHJGd3wwZk";
+
+const intro =
+  document.getElementById("intro");
+
+const game =
+  document.getElementById("game");
+
+const field =
+  document.getElementById("field");
+
+const message =
+  document.getElementById("message");
+
+const messageText =
+  document.getElementById("messageText");
+
+const temperature =
+  document.getElementById("temperature");
+
+let secretEnvelope = null;
+
+
+const messages = [
+
+  "Happy birthday, Harvy!",
+  "Happy birthday, Joscel!",
+  "Hope you both have an amazing day.",
+  "Have a great birthday!",
+  "Enjoy the celebration.",
+  "Hope you make some great memories.",
+  "Wishing you both a great year ahead.",
+  "Have fun today!",
+  "Enjoy your special day.",
+  "Hope today goes really well.",
+  "Here's another birthday message.",
+  "Keep smiling and enjoy your day.",
+  "You found another one.",
+  "There are still plenty more.",
+  "Don't stop searching.",
+  "Hope you like the surprise.",
+  "Make today memorable.",
+  "Have an awesome birthday.",
+  "Happy birthday once again."
+
+];
+
+
+/* START */
+
+document
+.getElementById("start")
+.addEventListener("click",function(){
+
+  intro.remove();
+
+  game.classList.add("active");
+
+  createEnvelopes();
+
+});
+
+
+/* CREATE ENVELOPES */
+
+function createEnvelopes(){
+
+  field.innerHTML="";
+
+  secretEnvelope=null;
+
+  const secretIndex =
+    Math.floor(
+      Math.random()*TOTAL_ENVELOPES
+    );
+
+  const fragment =
+    document.createDocumentFragment();
+
+
+  for(
+    let i=0;
+    i<TOTAL_ENVELOPES;
+    i++
+  ){
+
+    const envelope =
+      document.createElement("div");
+
+    envelope.className="envelope";
+
+
+    envelope.style.left =
+      (3+Math.random()*94)+"%";
+
+
+    envelope.style.top =
+      (13+Math.random()*78)+"%";
+
+
+    envelope.style.setProperty(
+      "--rotation",
+      (-14+Math.random()*28)+"deg"
+    );
+
+
+    envelope.style.setProperty(
+      "--depth",
+      Math.floor(
+        1+Math.random()*250
+      )
+    );
+
+
+    envelope.dataset.message =
+      messages[
+        Math.floor(
+          Math.random()*messages.length
+        )
+      ];
+
+
+    /* SECRET */
+
+    if(i===secretIndex){
+
+      envelope.classList.add("secret");
+
+      createSecretVideo(envelope);
+
+      secretEnvelope=envelope;
+
+    }
+
+
+    fragment.appendChild(envelope);
+
+  }
+
+
+  field.appendChild(fragment);
+
+  setupDragging();
+
+}
+
+
+/* SECRET VIDEO ENVELOPE */
+
+function createSecretVideo(envelope){
+
+  /*
+    Video icon is physically part of the
+    envelope design instead of floating above it.
+  */
+
+  const videoBadge =
+    document.createElement("div");
+
+  videoBadge.className="videoBadge";
+
+
+  const film1 =
+    document.createElement("div");
+
+  film1.className="filmDetail film1";
+
+
+  const film2 =
+    document.createElement("div");
+
+  film2.className="filmDetail film2";
+
+
+  const film3 =
+    document.createElement("div");
+
+  film3.className="filmDetail film3";
+
+
+  const film4 =
+    document.createElement("div");
+
+  film4.className="filmDetail film4";
+
+
+  const inside =
+    document.createElement("div");
+
+  inside.className="videoInside";
+
+
+  const playScreen =
+    document.createElement("div");
+
+  playScreen.className="playScreen";
+
+
+  const playButton =
+    document.createElement("div");
+
+  playButton.className="playButton";
+
+  playButton.textContent =
+    "▶ TAP TO PLAY";
+
+
+  playScreen.appendChild(
+    playButton
+  );
+
+
+  playScreen.addEventListener(
+    "pointerdown",
+    function(e){
+
+      e.stopPropagation();
+
+    },
+    {passive:true}
+  );
+
+
+  playScreen.addEventListener(
+    "click",
+    function(e){
+
+      e.stopPropagation();
+
+      playVideo(
+        inside,
+        playScreen
+      );
+
+    }
+  );
+
+
+  const iframe =
+    document.createElement("iframe");
+
+  iframe.className="youtube";
+
+  iframe.setAttribute(
+    "allow",
+    "autoplay; encrypted-media; picture-in-picture"
+  );
+
+  iframe.setAttribute(
+    "allowfullscreen",
+    ""
+  );
+
+
+  inside.appendChild(playScreen);
+
+  inside.appendChild(iframe);
+
+
+  envelope.appendChild(videoBadge);
+
+  envelope.appendChild(film1);
+  envelope.appendChild(film2);
+  envelope.appendChild(film3);
+  envelope.appendChild(film4);
+
+  envelope.appendChild(inside);
+
+}
+
+
+/* PLAY VIDEO */
+
+function playVideo(
+  inside,
+  playScreen
+){
+
+  const iframe =
+    inside.querySelector(".youtube");
+
+
+  iframe.src =
+    "https://www.youtube.com/embed/" +
+    VIDEO_ID +
+    "?autoplay=1" +
+    "&playsinline=1" +
+    "&rel=0";
+
+
+  iframe.style.display="block";
+
+  playScreen.style.display="none";
+
+}
+
+
+/* HOT / COLD */
+
+function updateTemperature(envelope){
+
+  if(
+    !secretEnvelope ||
+    envelope===secretEnvelope
+  ){
+    return;
+  }
+
+
+  const a =
+    envelope.getBoundingClientRect();
+
+  const b =
+    secretEnvelope.getBoundingClientRect();
+
+
+  const ax =
+    a.left+a.width/2;
+
+  const ay =
+    a.top+a.height/2;
+
+  const bx =
+    b.left+b.width/2;
+
+  const by =
+    b.top+b.height/2;
+
+
+  const distance =
+    Math.hypot(
+      ax-bx,
+      ay-by
+    );
+
+
+  const screen =
+    Math.min(
+      innerWidth,
+      innerHeight
+    );
+
+
+  temperature.className="show";
+
+
+  if(distance > screen*.48){
+
+    temperature.textContent =
+      "❄️ VERY COLD";
+
+    temperature.classList.add("cold");
+
+  }
+
+  else if(distance > screen*.32){
+
+    temperature.textContent =
+      "❄️ COLD";
+
+    temperature.classList.add("cold");
+
+  }
+
+  else if(distance > screen*.18){
+
+    temperature.textContent =
+      "🌡️ WARM";
+
+    temperature.classList.add("warm");
+
+  }
+
+  else if(distance > screen*.08){
+
+    temperature.textContent =
+      "🔥 HOT";
+
+    temperature.classList.add("hot");
+
+  }
+
+  else{
+
+    temperature.textContent =
+      "🔥🔥 SCORCHING HOT";
+
+    temperature.classList.add("scorching");
+
+  }
+
+}
+
+
+/* DRAGGING */
+
+function setupDragging(){
+
+  const envelopes =
+    document.querySelectorAll(
+      ".envelope"
+    );
+
+
+  envelopes.forEach(function(envelope){
+
+    let active=false;
+
+    let moved=false;
+
+    let startX=0;
+    let startY=0;
+
+    let startLeft=0;
+    let startTop=0;
+
+
+    envelope.addEventListener(
+      "pointerdown",
+      function(e){
+
+        if(
+          e.target.closest(".videoInside")
+        ){
+          return;
+        }
+
+
+        e.preventDefault();
+
+
+        active=true;
+
+        moved=false;
+
+
+        startX=e.clientX;
+        startY=e.clientY;
+
+
+        const rect =
+          envelope.getBoundingClientRect();
+
+
+        startLeft =
+          rect.left+
+          rect.width/2;
+
+        startTop =
+          rect.top+
+          rect.height/2;
+
+
+        envelope.classList.add(
+          "dragging"
+        );
+
+
+        envelope.setPointerCapture(
+          e.pointerId
+        );
+
+
+        updateTemperature(
+          envelope
+        );
+
+      },
+      {passive:false}
+    );
+
+
+    envelope.addEventListener(
+      "pointermove",
+      function(e){
+
+        if(!active){
+          return;
+        }
+
+
+        const dx =
+          e.clientX-startX;
+
+        const dy =
+          e.clientY-startY;
+
+
+        if(
+          Math.abs(dx)>5 ||
+          Math.abs(dy)>5
+        ){
+
+          moved=true;
+
+        }
+
+
+        let x =
+          startLeft+dx;
+
+        let y =
+          startTop+dy;
+
+
+        const halfW =
+          envelope.offsetWidth/2;
+
+        const halfH =
+          envelope.offsetHeight/2;
+
+
+        x=Math.max(
+          halfW,
+          Math.min(
+            innerWidth-halfW,
+            x
+          )
+        );
+
+
+        y=Math.max(
+          halfH,
+          Math.min(
+            innerHeight-halfH,
+            y
+          )
+        );
+
+
+        envelope.style.left =
+          x+"px";
+
+        envelope.style.top =
+          y+"px";
+
+
+        updateTemperature(
+          envelope
+        );
+
+      },
+      {passive:true}
+    );
+
+
+    envelope.addEventListener(
+      "pointerup",
+      function(){
+
+        if(!active){
+          return;
+        }
+
+
+        active=false;
+
+
+        envelope.classList.remove(
+          "dragging"
+        );
+
+
+        if(moved){
+          return;
+        }
+
+
+        if(
+          envelope.classList.contains("secret")
+        ){
+
+          temperature.textContent =
+            "🔥 YOU FOUND IT!";
+
+          temperature.className =
+            "show scorching";
+
+
+          openSecret(envelope);
+
+        }
+
+        else{
+
+          openMessage(
+            envelope.dataset.message
+          );
+
+        }
+
+      }
+    );
+
+
+    envelope.addEventListener(
+      "pointercancel",
+      function(){
+
+        active=false;
+
+        envelope.classList.remove(
+          "dragging"
+        );
+
+      }
+    );
+
+  });
+
+}
+
+
+/* OPEN SECRET */
+
+function openSecret(envelope){
+
+  envelope.classList.add("open");
+
+}
+
+
+/* MESSAGE */
+
+function openMessage(text){
+
+  messageText.textContent=text;
+
+  message.classList.add("show");
+
+}
+
+
+/* LEAVE */
+
+document
+.getElementById("leave")
+.addEventListener(
+  "click",
+  function(){
+
+    message.classList.remove("show");
+
+  }
+);
+
+
+/* CLOSE MESSAGE */
+
+message.addEventListener(
+  "click",
+  function(e){
+
+    if(e.target===message){
+
+      message.classList.remove("show");
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
